@@ -26,6 +26,7 @@ public class Boggle {
 		
 		scan.nextLine();
 		manager.newGame(sizeOfBoard, numPlayers, "cubes.txt", dictionary);
+		ArrayList<String> allWords = new ArrayList<String> (manager.getAllWords());
 		
 		System.out.println("Please pick a search tactic: a. Search Board b. Search Dictionary");
 		String tactic = scan.nextLine();
@@ -44,27 +45,30 @@ public class Boggle {
 		manager.print();
 		
 		boolean keepGoing = true;
+		int points = 0;
 		while (keepGoing) {
 			System.out.println("Please enter a word on the board: ");
 			String userEnteredWord = scan.nextLine();
 			
-			ArrayList<String> allWords = new ArrayList<String> (manager.getAllWords());
-			for(String s:allWords)
-				System.out.println(s);
-			System.out.println(allWords.size());
+			points += manager.addWord(userEnteredWord, playerNum);
+			System.out.println("You have "+points+" points");
+			//ArrayList<String> allWords = new ArrayList<String> (manager.getAllWords());
+//			for(String s:allWords)
+//				System.out.println(s);
+//			System.out.println(allWords.size());
 			
-			System.out.println(userEnteredWord);
-			if(allWords.contains(userEnteredWord.toLowerCase())) {
-				System.out.println("Correct!");
-				List<Point> coordinates = manager.getLastAddedWord();
-				char[][] board = manager.getBoard();
-				for (Point p: coordinates) {
-					Character.toLowerCase(board[(int) p.getX()][(int) p.getY()]);
-				}
-			}
-			else {
-				System.out.println("This word was not on the board");
-			}
+			//System.out.println(userEnteredWord);
+//			if(allWords.contains(userEnteredWord.toLowerCase())) {
+//				System.out.println("Correct!");
+//				List<Point> coordinates = manager.getLastAddedWord();
+//				char[][] board = manager.getBoard();
+//				for (Point p: coordinates) {
+//					Character.toLowerCase(board[(int) p.getX()][(int) p.getY()]);
+//				}
+//			}
+//			else {
+//				System.out.println("This word was not on the board");
+//			}
 			
 			System.out.println("Do you want to keep playing? Enter y or n.");
 			String repeat = scan.nextLine();

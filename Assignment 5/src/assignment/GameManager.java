@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +14,7 @@ public class GameManager implements BoggleGame {
 	
 	ArrayList<String> cubes = new ArrayList<String>();
 	char[][] board;
-	ArrayList<ArrayList<String>> playerLists;
+	List<List<String>> playerLists;
 	GameDictionary dictionary = new GameDictionary();
 	//Iterator<String> itr = GameDictionary.iterator();
 	SearchTactic currentSearchTactic = BoggleGame.SEARCH_DEFAULT;
@@ -41,7 +42,9 @@ public class GameManager implements BoggleGame {
 		}	
 		
 		scores = new int[numPlayers];
-		playerLists = new ArrayList<ArrayList<String>>(numPlayers);
+		playerLists = new ArrayList<List<String>>(numPlayers);
+		for(int i = 0; i < numPlayers; i++)
+			playerLists.add((Arrays.asList("")));
 		dictionary = (GameDictionary) dict;
 	}
 
@@ -56,21 +59,28 @@ public class GameManager implements BoggleGame {
 		//2. if word is valid, need to check if been used before
 		//3. if still good, then score it - 1 point for 4 letters, 2 points for 5 etc.
 		//add word to player list if valid
-		Collection<String> allWords = getAllWords();
-		for (int i = 0; i < allWords.size(); i++) {
-			 if (allWords.contains(word)) {
-				 for (int j = 0; j < playerLists.get(player - 1).size(); j++) {
-					// if ()
-				 }
-				 
-			 }
-			 
-		}
 		
-//		if (valid) {
-//			playerList
-//		}
-		return 0;
+		ArrayList<String> allWords = new ArrayList<String> (getAllWords());
+		System.out.println(playerLists.toString());
+		System.out.println(playerLists.size());
+		System.out.println(playerLists.get(0).size());
+		ArrayList<String> indPlayerWords = new ArrayList<String> (getAllWords());
+		
+		if(allWords.contains(word.toLowerCase()) && !(playerLists.get(player).contains(word.toLowerCase())) && word.length() >= 4) {
+			indPlayerWords.add(word);
+			scores[player] += word.length()-3;
+			
+			List<Point> coordinates = getLastAddedWord();
+			char[][] board = getBoard();
+			for (Point p: coordinates) {
+				Character.toLowerCase(board[(int) p.getX()][(int) p.getY()]);
+			}
+		}
+		else {
+			return 0;
+		}
+		playerLists.add(indPlayerWords);
+		return scores[player];
 	}
 
 	@Override
