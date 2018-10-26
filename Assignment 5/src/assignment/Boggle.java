@@ -16,6 +16,8 @@ public class Boggle {
 		dictionary.loadDictionary("words.txt");
 		
 		
+		//need to give user a chance to switch players!
+		
 		System.out.println("Welcome to Boggle!");
 		System.out.println();
 		System.out.println("Please enter the size of board: ");
@@ -54,28 +56,17 @@ public class Boggle {
 			System.out.println("Please enter a word on the board: ");
 			String userEnteredWord = scan.nextLine();
 			
-			points += manager.addWord(userEnteredWord, playerNum);
-			System.out.println("You have "+points+" points");
-			//ArrayList<String> allWords = new ArrayList<String> (manager.getAllWords());
-//			for(String s:allWords)
-//				System.out.println(s);
-//			System.out.println(allWords.size());
+			points = manager.addWord(userEnteredWord, playerNum);
+			System.out.println("You have "+points+" point(s)");
 			
-			//System.out.println(userEnteredWord);
-//			if(allWords.contains(userEnteredWord.toLowerCase())) {
-//				System.out.println("Correct!");
-//				List<Point> coordinates = manager.getLastAddedWord();
-//				char[][] board = manager.getBoard();
-//				for (Point p: coordinates) {
-//					Character.toLowerCase(board[(int) p.getX()][(int) p.getY()]);
-//				}
-//			}
-//			else {
-//				System.out.println("This word was not on the board");
-//			}
+			manager.print();
 			
 			System.out.println("Do you want to keep playing? Enter y or n.");
 			String repeat = scan.nextLine();
+			while (!(repeat.toLowerCase().equals("n") || repeat.toLowerCase().equals("y"))) {
+				System.out.println("Please enter y or n");
+				repeat = scan.nextLine();
+			}
 			if (repeat.toLowerCase().equals("n")) {
 				keepGoing = false;
 				//return score - figure out how to write the method

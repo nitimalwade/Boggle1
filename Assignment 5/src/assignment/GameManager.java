@@ -64,10 +64,6 @@ public class GameManager implements BoggleGame {
 		//add word to player list if valid
 		
 		ArrayList<String> allWords = new ArrayList<String> (getAllWords());
-		//System.out.println(playerLists.toString());
-		System.out.println(playerLists.size());
-		System.out.println(playerLists.get(0).size());
-		System.out.println(playerLists.get(0));
 		ArrayList<String> indPlayerWords = new ArrayList<String>();
 		
 		//if word is valid (in allWords) and has not already been added to playerList, and is longer than 4 characters, then add to playerList
@@ -83,7 +79,7 @@ public class GameManager implements BoggleGame {
 			}
 		}
 		else {
-			return 0;
+			return scores[player];
 		}
 		playerLists.add(player, indPlayerWords);
 		return scores[player];
@@ -91,17 +87,7 @@ public class GameManager implements BoggleGame {
 
 	@Override
 	public List<Point> getLastAddedWord() {
-		
-		
-			System.out.println(points.keySet());
-			Set s = points.keySet();
-			String [] p = new String[s.size()];
-			s.toArray(p);
-			for(int i = 0; i< points.size(); i++) 
-				System.out.println(points.get(p[i]));
-		
-			
-		return null;
+		return points.get(lastAddedWord);
 	}
 
 	@Override
@@ -191,8 +177,15 @@ public class GameManager implements BoggleGame {
 			letter = Character.toLowerCase(currentWord.charAt(letterPos));
 		
 		if (currentWord.toLowerCase().equals(boardWord.toLowerCase())) {
-			for(int i = currentWord.length(); i < wordPoints.size(); i++) {
+			for(int i = wordPoints.size() - 1; i > currentWord.length(); i--) {
 				wordPoints.remove(i);
+			}
+//			System.out.println(wordPoints.size());
+//			System.out.println(currentWord.length());
+			if(wordPoints.size() != currentWord.length()) {
+				System.out.println(wordPoints.size()+" "+currentWord.length());
+				System.out.println(wordPoints);
+				System.out.println(currentWord);
 			}
 			points.put(currentWord, wordPoints);
 			return true;
@@ -205,8 +198,13 @@ public class GameManager implements BoggleGame {
 						r = i; 
 						c = j;
 						visited[i][j] = true;
-						wordPoints.add(new Point(j,i));
-						wordFound |= searchBoard(board, visited, r, c, boardWord + letter, currentWord, letterPos + 1, wordPoints);
+
+						ArrayList <Point> temp = new ArrayList <Point>();
+						for(Point p:wordPoints)
+							temp.add(p);
+						temp.add(new Point(j,i));
+						
+						wordFound |= searchBoard(board, visited, r, c, boardWord + letter, currentWord, letterPos + 1, temp);
 						visited[i][j] = false;
 					}
 				}
@@ -239,16 +237,28 @@ public class GameManager implements BoggleGame {
 	}
 	
 	public void print() {
+		List<Point> coordinates = getLastAddedWord();
+		
+		if(coordinates != null && !coordinates.isEmpty()) {
+			for (Point p: coordinates) {
+				board[(int) p.getY()][(int) p.getX()] = Character.toLowerCase(board[(int) p.getY()][(int) p.getX()]);
+			}
+		}
+		
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board.length; j++) {
 				System.out.print(board[i][j] + "| ");
 			}
 			System.out.println();
 		}
+		
+		if(coordinates != null && !coordinates.isEmpty()) {
+			System.out.println("inside if");
+			for (Point p: coordinates) {
+				board[(int) p.getY()][(int) p.getX()] = Character.toUpperCase(board[(int) p.getY()][(int) p.getX()]);
+			}
+		}
 	}
 	
-	//errors: size of allWords is 0
-	
-	//never recursively calls function if first letter is not first letter of board
 
 }
