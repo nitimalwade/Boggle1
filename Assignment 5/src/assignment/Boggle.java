@@ -20,6 +20,10 @@ public class Boggle {
 		System.out.println();
 		System.out.println("Please enter the size of board: ");
 		int sizeOfBoard = scan.nextInt();
+		if (sizeOfBoard > 4) {
+			System.out.println("Size of board cannot be greater than 4. Please re-enter size.");
+			sizeOfBoard = scan.nextInt();
+		}
 		System.out.println("Please enter the number of players: ");
 		int numPlayers = scan.nextInt();
 		System.out.println();

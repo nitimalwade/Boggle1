@@ -61,9 +61,10 @@ public class GameManager implements BoggleGame {
 		//add word to player list if valid
 		
 		ArrayList<String> allWords = new ArrayList<String> (getAllWords());
-		System.out.println(playerLists.toString());
+		//System.out.println(playerLists.toString());
 		System.out.println(playerLists.size());
 		System.out.println(playerLists.get(0).size());
+		System.out.println(playerLists.get(0));
 		ArrayList<String> indPlayerWords = new ArrayList<String> (getAllWords());
 		
 		if(allWords.contains(word.toLowerCase()) && !(playerLists.get(player).contains(word.toLowerCase())) && word.length() >= 4) {
