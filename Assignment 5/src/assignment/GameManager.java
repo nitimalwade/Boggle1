@@ -100,12 +100,13 @@ public class GameManager implements BoggleGame {
 		int c = 0;
 		String boardWord = "";
 		boolean foundWord = false;
-		String currentWord;
+		String currentWord = "";
+		Iterator <String> iteratorWords = words.iterator();
 		
 		if (currentSearchTactic == SearchTactic.SEARCH_BOARD) {
 			
-			while (words.iterator().hasNext()) {
-				currentWord = words.iterator().next();
+			while (iteratorWords.hasNext()) {
+				currentWord = iteratorWords.next();
 				
 				//resetting all variables for next word
 				r = 0; 
@@ -121,9 +122,8 @@ public class GameManager implements BoggleGame {
 				
 				for (int i = 0; i < board.length; i++) {
 					for (int j = 0; j < board.length; j++) {
-						if (board[i][j] == currentWord.charAt(0)) {
-							foundWord = searchBoard(board, visited, r, c, boardWord, currentWord, 0);
-							
+						if (Character.toLowerCase(board[i][j]) == Character.toLowerCase(currentWord.charAt(0))) {
+							foundWord |= searchBoard(board, visited, i, j, boardWord, currentWord, 0);
 						}
 					}
 				}
@@ -132,19 +132,17 @@ public class GameManager implements BoggleGame {
 					allWords.add(currentWord);
 				}
 			}
-			
-//			String word = words.iterator().next();
-//			boolean firstCase = true;
-//			allWords = searchBoard(board, visited, r, c, boardWord, currentWord, letterPos);
-//			for (int i = 0; i < allWords.size(); i++) {
-//				System.out.println("j" + allWords.get(i));
-//			}
 		}
 		else if (currentSearchTactic == SearchTactic.SEARCH_DICT) {
-			allWords = searchDictionary(words, board, visited, r, c, boardWord, allWords);
+			
+			for (int i = 0; i < board.length; i++) {
+				for (int j = 0; j < board.length; j++) {
+					allWords = searchDictionary(words, board, visited, i, j, boardWord, allWords);
+				}
+			}
+			
+			
 		}
-		
-		//return list
 		return allWords;
 	}
 
@@ -162,110 +160,28 @@ public class GameManager implements BoggleGame {
 	//gets all words from dictionary and checks if in board
 	public boolean searchBoard(char [][] board, boolean [][] visited, int r, int c, String boardWord, String currentWord, int letterPos) {
 		char letter = ' ';
+		boolean wordFound = false;
 		if(letterPos < currentWord.length())
-			letter = currentWord.charAt(letterPos);
+			letter = Character.toLowerCase(currentWord.charAt(letterPos));
 		
-		if (currentWord.equals(boardWord)) {
-			System.out.println("found word!");
+		if (currentWord.toLowerCase().equals(boardWord.toLowerCase())) {
 			return true;
 		}
 		
-		for(int i = r - 1; i < r + 1; i++) {
-			for(int j = c - 1; j < c + 1; j++) {
+		for(int i = r - 1; i <= r + 1; i++) {
+			for(int j = c - 1; j <= c + 1; j++) {
 				if(i >= 0 && j >= 0 && i < board.length && j < board[0].length && !visited[i][j]) {
-					if(letter == board[i][j]) {
-						System.out.println("got next letter");
-						boardWord+=letter;
+					if(letter == Character.toLowerCase(board[i][j])) {
 						r = i; 
 						c = j;
-						letterPos++;
 						visited[i][j] = true;
-						searchBoard(board, visited, r, c, boardWord, currentWord, letterPos);
+						wordFound |= searchBoard(board, visited, r, c, boardWord + letter, currentWord, letterPos + 1);
+						visited[i][j] = false;
 					}
 				}
 			}
 		}
-		System.out.println("before false");
-		return false;
-		
-//		char letter;
-//		if(letterPos < currentWord.length())
-//			letter = currentWord.charAt(letterPos);
-//		//int boardCount = 0;
-//		System.out.println(currentWord);
-//		System.out.println(boardWord);
-//		
-//		if (currentWord.equals(boardWord)) {
-//			System.out.println("sfdhtzs");
-//			allWords.add(currentWord);
-//			if(words.iterator().hasNext()) {
-//				currentWord = words.iterator().next();
-//				letter = currentWord.charAt(0);
-//			}
-//		}
-//		
-//		if(boardCount == (board.length * board.length)) {
-//			if (words.hasNext())
-//				currentWord = words.next();
-//			else {
-//				System.out.println("No words on the board");
-//			}
-//		}
-//		
-//		//ERROR: boardWord is not updating - not calling the recursion, only exiting after first loop
-//		
-//		if (firstCase) {
-//			int count = 0;
-//			for (int i = 0; i < board.length; i++ ) {
-//				for (int j = 0; j < board.length; j++) {
-//					System.out.println(board[i][j]);
-//					System.out.println(letter);
-//					if (Character.toLowerCase(board[i][j]) == letter) {
-//						System.out.println("entered first case");
-//						firstCase = false;
-//						boardWord += letter;
-//						letter = currentWord.charAt(1);
-//						visited[i][j] = true;
-//						r = i; 
-//						c = j;
-//						letterPos++;
-//						searchBoard(words, board, visited, r, c, boardWord, currentWord, allWords, letterPos, firstCase);
-//					}
-//					count++;
-//				}
-//			}
-//			if(count == (board.length * board.length)) {
-//				if (words.iterator().hasNext()) {
-//					currentWord = words.iterator().next();
-//					searchBoard(words, board, visited, r, c, boardWord, currentWord, allWords, letterPos, firstCase);
-//				}
-//				else {
-//					System.out.println("No words on the board");
-//				}
-//			}
-//		}
-//		else {
-//			System.out.println("entered else - not first case");
-//			for(int i = r - 1; i < r + 1; i++) {
-//				for(int j = c - 1; j < c + 1; j++) {
-//					if(i >= 0 && j >= 0 && i < board.length && j < board[0].length && !visited[i][j] && letter == board[i][j]) {
-//						System.out.println("got next letter");
-//						boardWord+=letter;
-//						r = i; 
-//						c = j;
-//						letterPos++;
-//						visited[i][j] = true;
-//						searchBoard(words, board, visited, r, c, boardWord, currentWord, allWords, letterPos, firstCase);
-//					}
-//				}
-//			}
-//		}
-//		
-//		visited[r][c] = false;
-//		return allWords;
-		
-		//edge cases to fix: if loops through entire dictionary and board has no valid words
-		//if finds first letter, but can't find consecutive letters, should move to next word
+		return wordFound;
 	}
 	
 	//gets all words from board and checks if in dictionary
@@ -274,19 +190,19 @@ public class GameManager implements BoggleGame {
 		//if on board, add to list
 		
 		visited[r][c] = true;
-		word = word + board[r][c];
+		word = word + Character.toLowerCase(board[r][c]);
 		
 		if(words.search(word))
 			allWords.add(word);
 		
-		for(int i = r - 1; i < r + 1; i++) {
-			for(int j = c - 1; j < c + 1; j++) {
+		for(int i = r - 1; i <= r + 1; i++) {
+			for(int j = c - 1; j <= c + 1; j++) {
 				if(i >= 0 && j >= 0 && i < board.length && j < board[0].length && !visited[i][j])
-					searchDictionary(words, board, visited, r, c, word, allWords);
+					searchDictionary(words, board, visited, i, j, word.toLowerCase(), allWords);
 			}
 		}
 		
-		word = word.substring(0, word.length()-2);
+		word = word.substring(0, word.length()-1);
 		visited[r][c] = false;
 		return allWords;
 	}

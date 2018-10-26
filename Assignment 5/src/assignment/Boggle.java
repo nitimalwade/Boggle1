@@ -36,18 +36,25 @@ public class Boggle {
 		else
 			System.out.println("Invalid Answer :(");
 		
-		manager.print();
-	
+		
 		System.out.println("Please enter player number");
 		int playerNum = scan.nextInt() - 1;
+		scan.nextLine();
+		
+		manager.print();
+		
 		boolean keepGoing = true;
 		while (keepGoing) {
 			System.out.println("Please enter a word on the board: ");
 			String userEnteredWord = scan.nextLine();
-			scan.nextLine();
-			ArrayList<String> allWords = (ArrayList<String>) manager.getAllWords();
+			
+			ArrayList<String> allWords = new ArrayList<String> (manager.getAllWords());
+			for(String s:allWords)
+				System.out.println(s);
 			System.out.println(allWords.size());
-			if(allWords.contains(userEnteredWord)) {
+			
+			System.out.println(userEnteredWord);
+			if(allWords.contains(userEnteredWord.toLowerCase())) {
 				System.out.println("Correct!");
 				List<Point> coordinates = manager.getLastAddedWord();
 				char[][] board = manager.getBoard();
@@ -55,6 +62,10 @@ public class Boggle {
 					Character.toLowerCase(board[(int) p.getX()][(int) p.getY()]);
 				}
 			}
+			else {
+				System.out.println("This word was not on the board");
+			}
+			
 			System.out.println("Do you want to keep playing? Enter y or n.");
 			String repeat = scan.nextLine();
 			if (repeat.toLowerCase().equals("n")) {

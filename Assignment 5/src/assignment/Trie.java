@@ -68,9 +68,9 @@ class TrieNode {
 	    }
 	 
 	    public TrieNode searchNode(String s){
-	        TrieNode p = root;
-	        for(int i=0; i<s.length(); i++){
-	            char c= s.charAt(i);
+	    	TrieNode p = root;
+	        for(int i = 0; i < s.length(); i++){
+	            char c = Character.toLowerCase(s.charAt(i));
 	            int index = c-'a';
 	            if(p.arr[index]!=null){
 	                p = p.arr[index];
