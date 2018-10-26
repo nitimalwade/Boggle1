@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class GameManager implements BoggleGame {
 	
@@ -20,6 +22,7 @@ public class GameManager implements BoggleGame {
 	SearchTactic currentSearchTactic = BoggleGame.SEARCH_DEFAULT;
 	int [] scores;
 	String lastAddedWord;
+	HashMap<String, ArrayList<Point>> points = new HashMap<String, ArrayList<Point>>();
 	
 	@Override
 	public void newGame(int size, int numPlayers, String cubeFile, BoggleDictionary dict) throws IOException {
@@ -65,11 +68,13 @@ public class GameManager implements BoggleGame {
 		System.out.println(playerLists.size());
 		System.out.println(playerLists.get(0).size());
 		System.out.println(playerLists.get(0));
-		ArrayList<String> indPlayerWords = new ArrayList<String> (getAllWords());
+		ArrayList<String> indPlayerWords = new ArrayList<String>();
 		
+		//if word is valid (in allWords) and has not already been added to playerList, and is longer than 4 characters, then add to playerList
 		if(allWords.contains(word.toLowerCase()) && !(playerLists.get(player).contains(word.toLowerCase())) && word.length() >= 4) {
 			indPlayerWords.add(word);
 			scores[player] += word.length()-3;
+			lastAddedWord = word;
 			
 			List<Point> coordinates = getLastAddedWord();
 			char[][] board = getBoard();
@@ -80,14 +85,21 @@ public class GameManager implements BoggleGame {
 		else {
 			return 0;
 		}
-		playerLists.add(indPlayerWords);
+		playerLists.add(player, indPlayerWords);
 		return scores[player];
 	}
 
 	@Override
 	public List<Point> getLastAddedWord() {
 		
-		// check if word is in getAllWords
+		
+			System.out.println(points.keySet());
+			Set s = points.keySet();
+			String [] p = new String[s.size()];
+			s.toArray(p);
+			for(int i = 0; i< points.size(); i++) 
+				System.out.println(points.get(p[i]));
+		
 			
 		return null;
 	}
@@ -120,6 +132,7 @@ public class GameManager implements BoggleGame {
 				currentWord = iteratorWords.next();
 				
 				//resetting all variables for next word
+				ArrayList <Point> wordPoints = new ArrayList <Point>();
 				r = 0; 
 				c = 0;
 				boardWord = "";
@@ -134,7 +147,7 @@ public class GameManager implements BoggleGame {
 				for (int i = 0; i < board.length; i++) {
 					for (int j = 0; j < board.length; j++) {
 						if (Character.toLowerCase(board[i][j]) == Character.toLowerCase(currentWord.charAt(0))) {
-							foundWord |= searchBoard(board, visited, i, j, boardWord, currentWord, 0);
+							foundWord |= searchBoard(board, visited, i, j, boardWord, currentWord, 0, wordPoints);
 						}
 					}
 				}
@@ -146,6 +159,7 @@ public class GameManager implements BoggleGame {
 		}
 		else if (currentSearchTactic == SearchTactic.SEARCH_DICT) {
 			
+			ArrayList <Point> wordPoints = new ArrayList <Point>();
 			for (int i = 0; i < board.length; i++) {
 				for (int j = 0; j < board.length; j++) {
 					allWords = searchDictionary(words, board, visited, i, j, boardWord, allWords);
@@ -169,13 +183,18 @@ public class GameManager implements BoggleGame {
 	}
 	
 	//gets all words from dictionary and checks if in board
-	public boolean searchBoard(char [][] board, boolean [][] visited, int r, int c, String boardWord, String currentWord, int letterPos) {
+	public boolean searchBoard(char [][] board, boolean [][] visited, int r, int c, String boardWord, String currentWord, int letterPos, ArrayList <Point> wordPoints) {
 		char letter = ' ';
 		boolean wordFound = false;
+		
 		if(letterPos < currentWord.length())
 			letter = Character.toLowerCase(currentWord.charAt(letterPos));
 		
 		if (currentWord.toLowerCase().equals(boardWord.toLowerCase())) {
+			for(int i = currentWord.length(); i < wordPoints.size(); i++) {
+				wordPoints.remove(i);
+			}
+			points.put(currentWord, wordPoints);
 			return true;
 		}
 		
@@ -186,7 +205,8 @@ public class GameManager implements BoggleGame {
 						r = i; 
 						c = j;
 						visited[i][j] = true;
-						wordFound |= searchBoard(board, visited, r, c, boardWord + letter, currentWord, letterPos + 1);
+						wordPoints.add(new Point(j,i));
+						wordFound |= searchBoard(board, visited, r, c, boardWord + letter, currentWord, letterPos + 1, wordPoints);
 						visited[i][j] = false;
 					}
 				}
