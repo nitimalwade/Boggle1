@@ -1,7 +1,5 @@
 package assignment;
-//test github
 
-import java.awt.Point;
 import java.io.IOException;
 import java.util.*;
 
@@ -14,9 +12,6 @@ public class Boggle {
 		GameManager manager = new GameManager ();
 		GameDictionary dictionary = new GameDictionary();
 		dictionary.loadDictionary("words.txt");
-		
-		
-		//need to give user a chance to switch players!
 		
 		System.out.println("Welcome to Boggle!");
 		System.out.println();
@@ -53,32 +48,50 @@ public class Boggle {
 		boolean keepGoing = true;
 		int points = 0;
 		while (keepGoing) {
+			
 			System.out.println("Please enter a word on the board: ");
 			String userEnteredWord = scan.nextLine();
+			
+			if (tactic.toLowerCase().equals("b")) {
+				System.out.println("Please wait a few seconds while we evaluate your word.");
+			}
 			
 			points = manager.addWord(userEnteredWord, playerNum);
 			System.out.println("You have "+points+" point(s)");
 			
 			manager.print();
 			
-			System.out.println("Do you want to keep playing? Enter y or n.");
+			System.out.println("Do you want to continue your turn? Enter y or n.");
 			String repeat = scan.nextLine();
 			while (!(repeat.toLowerCase().equals("n") || repeat.toLowerCase().equals("y"))) {
 				System.out.println("Please enter y or n");
 				repeat = scan.nextLine();
 			}
 			if (repeat.toLowerCase().equals("n")) {
-				keepGoing = false;
-				//return score - figure out how to write the method
-				System.out.println("Here are all the words you missed!");
-				for (int i = 0; i < allWords.size(); i++) {
-					if (!(manager.playerLists.get(playerNum).contains(allWords.get(i)))) {
-						System.out.println(allWords.get(i));
+				System.out.println("Enter q to quit or s to switch players.");
+				String choice = scan.nextLine();
+				
+				if (choice.equals("q")) {
+					keepGoing = false;
+					//return score - figure out how to write the method
+					System.out.println("Here are all the words you missed!");
+					for (int i = 0; i < allWords.size(); i++) {
+						if (!(manager.playerLists.get(playerNum).contains(allWords.get(i))) && (allWords.get(i).length() > 3)) {
+							System.out.println(allWords.get(i));
+						}
 					}
+					System.out.println("Goodbye!");
 				}
-				System.out.println("Goodbye!");
+				
+				if (choice.equals("s")) {
+					System.out.println("Please enter player number");
+					playerNum = scan.nextInt() - 1;
+					scan.nextLine();
+					points = 0;
+					manager.print(playerNum);
+				}
 			}
 		}
 	}
-
+//fix lowercase on board - not picking the right letter if repeated letters
 }

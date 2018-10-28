@@ -18,7 +18,6 @@ public class GameManager implements BoggleGame {
 	char[][] board;
 	List<List<String>> playerLists;
 	GameDictionary dictionary = new GameDictionary();
-	//Iterator<String> itr = GameDictionary.iterator();
 	SearchTactic currentSearchTactic = BoggleGame.SEARCH_DEFAULT;
 	int [] scores;
 	String lastAddedWord;
@@ -47,7 +46,7 @@ public class GameManager implements BoggleGame {
 		scores = new int[numPlayers];
 		playerLists = new ArrayList<List<String>>(numPlayers);
 		for(int i = 0; i < numPlayers; i++)
-			playerLists.add((Arrays.asList("")));
+			playerLists.add(new ArrayList<String>());
 		dictionary = (GameDictionary) dict;
 	}
 
@@ -61,27 +60,23 @@ public class GameManager implements BoggleGame {
 		//1. check if word is on the board - using getAllWords
 		//2. if word is valid, need to check if been used before
 		//3. if still good, then score it - 1 point for 4 letters, 2 points for 5 etc.
-		//add word to player list if valid
+		//4. add word to player list if valid
 		
 		ArrayList<String> allWords = new ArrayList<String> (getAllWords());
-		ArrayList<String> indPlayerWords = new ArrayList<String>();
 		
 		//if word is valid (in allWords) and has not already been added to playerList, and is longer than 4 characters, then add to playerList
 		if(allWords.contains(word.toLowerCase()) && !(playerLists.get(player).contains(word.toLowerCase())) && word.length() >= 4) {
-			indPlayerWords.add(word);
+			playerLists.get(player).add(word);
 			scores[player] += word.length()-3;
 			lastAddedWord = word;
-			
 			List<Point> coordinates = getLastAddedWord();
+			
 			char[][] board = getBoard();
 			for (Point p: coordinates) {
 				Character.toLowerCase(board[(int) p.getX()][(int) p.getY()]);
 			}
 		}
-		else {
-			return scores[player];
-		}
-		playerLists.add(player, indPlayerWords);
+		
 		return scores[player];
 	}
 
@@ -145,14 +140,11 @@ public class GameManager implements BoggleGame {
 		}
 		else if (currentSearchTactic == SearchTactic.SEARCH_DICT) {
 			
-			ArrayList <Point> wordPoints = new ArrayList <Point>();
 			for (int i = 0; i < board.length; i++) {
 				for (int j = 0; j < board.length; j++) {
 					allWords = searchDictionary(words, board, visited, i, j, boardWord, allWords);
 				}
 			}
-			
-			
 		}
 		return allWords;
 	}
@@ -160,7 +152,6 @@ public class GameManager implements BoggleGame {
 	@Override
 	public void setSearchTactic(SearchTactic tactic) {
 		currentSearchTactic = tactic;
-		
 	}
 
 	@Override
@@ -180,13 +171,7 @@ public class GameManager implements BoggleGame {
 			for(int i = wordPoints.size() - 1; i > currentWord.length(); i--) {
 				wordPoints.remove(i);
 			}
-//			System.out.println(wordPoints.size());
-//			System.out.println(currentWord.length());
-			if(wordPoints.size() != currentWord.length()) {
-				System.out.println(wordPoints.size()+" "+currentWord.length());
-				System.out.println(wordPoints);
-				System.out.println(currentWord);
-			}
+			
 			points.put(currentWord, wordPoints);
 			return true;
 		}
@@ -236,8 +221,11 @@ public class GameManager implements BoggleGame {
 		return allWords;
 	}
 	
+	//clean this up
 	public void print() {
 		List<Point> coordinates = getLastAddedWord();
+		
+		//these are the same: coordinates and points.get(lastAddedWord)
 		
 		if(coordinates != null && !coordinates.isEmpty()) {
 			for (Point p: coordinates) {
@@ -253,12 +241,26 @@ public class GameManager implements BoggleGame {
 		}
 		
 		if(coordinates != null && !coordinates.isEmpty()) {
-			System.out.println("inside if");
 			for (Point p: coordinates) {
 				board[(int) p.getY()][(int) p.getX()] = Character.toUpperCase(board[(int) p.getY()][(int) p.getX()]);
 			}
 		}
 	}
 	
-
+	public void print(int playerNum) {
+		List<Point> coordinates = getLastAddedWord();
+		
+		if(coordinates != null && !coordinates.isEmpty()) {
+			for (Point p: coordinates) {
+				board[(int) p.getY()][(int) p.getX()] = Character.toUpperCase(board[(int) p.getY()][(int) p.getX()]);
+			}
+		}
+		
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board.length; j++) {
+				System.out.print(board[i][j] + "| ");
+			}
+			System.out.println();
+		}
+	}
 }
